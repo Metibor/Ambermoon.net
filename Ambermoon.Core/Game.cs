@@ -265,6 +265,7 @@ namespace Ambermoon
         bool trapped => trapMouseArea != null;
         public event Action<bool, Position> MouseTrappedChanged;
         internal Savegame CurrentSavegame { get; private set; }
+        IAudioPlayer audioPlayer;
 
         // Rendering
         readonly Cursor cursor = null;
@@ -317,8 +318,8 @@ namespace Ambermoon
 
         public Game(IRenderView renderView, IMapManager mapManager, IItemManager itemManager,
             ICharacterManager characterManager, ISavegameManager savegameManager, ISavegameSerializer savegameSerializer,
-            IDataNameProvider dataNameProvider, IPlacesReader placesReader, TextDictionary textDictionary, Cursor cursor,
-            bool legacyMode)
+            IDataNameProvider dataNameProvider, IPlacesReader placesReader, TextDictionary textDictionary, IAudioPlayer audioPlayer,
+            Cursor cursor, bool legacyMode)
         {
             this.cursor = cursor;
             this.legacyMode = legacyMode;
@@ -333,6 +334,7 @@ namespace Ambermoon
             this.savegameSerializer = savegameSerializer;
             DataNameProvider = dataNameProvider;
             this.textDictionary = textDictionary;
+            this.audioPlayer = audioPlayer;
             camera3D = renderView.Camera3D;
             messageText = renderView.RenderTextFactory.Create();
             messageText.Layer = renderView.GetLayer(Layer.Text);
@@ -636,7 +638,7 @@ namespace Ambermoon
             player.Position.X = (int)playerX;
             player.Position.Y = (int)playerY;
             player.Direction = direction;
-            
+
             renderView.GetLayer(Layer.Map3D).Visible = false;
             renderView.GetLayer(Layer.Billboards3D).Visible = false;
             for (int i = (int)Global.First2DLayer; i <= (int)Global.Last2DLayer; ++i)
@@ -665,7 +667,7 @@ namespace Ambermoon
             player.Position.X = (int)playerX;
             player.Position.Y = (int)playerY;
             player.Direction = direction;
-            
+
             renderView.GetLayer(Layer.Map3D).Visible = true;
             renderView.GetLayer(Layer.Billboards3D).Visible = true;
             for (int i = (int)Global.First2DLayer; i <= (int)Global.Last2DLayer; ++i)
@@ -1116,7 +1118,7 @@ namespace Ambermoon
             }
         }
 
-        public void OnKeyDown(Key key, KeyModifiers modifiers)
+    public void OnKeyDown(Key key, KeyModifiers modifiers)
         {
             if (allInputDisabled || pickingNewLeader)
                 return;
@@ -1164,8 +1166,8 @@ namespace Ambermoon
                         }
                     }
 
-                    break;
-                }
+                        break;
+                    }
                 case Key.F1:
                 case Key.F2:
                 case Key.F3:
@@ -1231,14 +1233,14 @@ namespace Ambermoon
                 case Key.Num7:
                 case Key.Num8:
                 case Key.Num9:
-                {
-                    int index = key - Key.Num1;
-                    int column = index % 3;
-                    int row = 2 - index / 3;
-                    layout.ReleaseButton(column + row * 3);
+                    {
+                        int index = key - Key.Num1;
+                        int column = index % 3;
+                        int row = 2 - index / 3;
+                        layout.ReleaseButton(column + row * 3);
 
-                    break;
-                }
+                        break;
+                    }
             }
         }
 
@@ -1533,7 +1535,7 @@ namespace Ambermoon
                 {
                     if (position.X < lastMousePosition.X)
                         trappedMousePositionOffset.X += lastMousePosition.X - position.X;
-                }                    
+                }
                 else if (trappedPosition.X >= trapMouseArea.Right)
                 {
                     if (position.X > lastMousePosition.X)
@@ -1717,6 +1719,10 @@ namespace Ambermoon
                     : Map.Name;
             windowTitle.Text = renderView.TextProcessor.CreateText(mapName);
             windowTitle.TextColor = TextColor.Gray;
+
+            audioPlayer.Stop();
+            audioPlayer.PlayTrack((AudioTrack)Map.MusicIndex);
+            audioPlayer.Play();
         }
 
         void ShowMap(bool show)
@@ -1770,6 +1776,11 @@ namespace Ambermoon
                     if (CurrentSavegame.ActiveSpells[(int)activeSpell] != null)
                         layout.AddActiveSpell(activeSpell, CurrentSavegame.ActiveSpells[(int)activeSpell]);
                 }
+
+            }
+            else
+            {
+                audioPlayer.Stop();
             }
         }
 

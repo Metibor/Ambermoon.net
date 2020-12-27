@@ -13,6 +13,7 @@ namespace Ambermoon
         public bool UseDataPath { get; set; } = false;
         public string DataPath { get; set; } = ExecutablePath;
         public bool LegacyMode { get; set; } = false;
+        public string SoundSource { get; set; } = "Null";
 
         public static string ExecutablePath
         {

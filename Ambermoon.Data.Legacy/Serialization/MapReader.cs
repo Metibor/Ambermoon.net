@@ -1,4 +1,5 @@
-﻿using Ambermoon.Data.Serialization;
+﻿using Ambermoon.Data.Enumerations;
+using Ambermoon.Data.Serialization;
 using System;
 using System.Collections.Generic;
 
@@ -17,7 +18,7 @@ namespace Ambermoon.Data.Legacy.Serialization
             if (map.Type != MapType.Map2D && map.Type != MapType.Map3D)
                 throw new Exception("Invalid map data.");
 
-            map.MusicIndex = dataReader.ReadByte();
+            map.MusicIndex = (AudioTrack)dataReader.ReadByte();
             map.Width = dataReader.ReadByte();
             map.Height = dataReader.ReadByte();
             map.TilesetOrLabdataIndex = dataReader.ReadByte();
