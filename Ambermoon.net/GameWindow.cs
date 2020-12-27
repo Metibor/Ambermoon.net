@@ -69,6 +69,7 @@ namespace Ambermoon
                 mouse.MouseDown += Mouse_MouseDown;
                 mouse.MouseUp += Mouse_MouseUp;
                 mouse.MouseMove += Mouse_MouseMove;
+                mouse.Scroll += Mouse_MouseScroll;
             }
         }
 
@@ -183,6 +184,21 @@ namespace Ambermoon
         void Mouse_MouseMove(IMouse mouse, System.Drawing.PointF position)
         {
             Game.OnMouseMove(position.Round(), GetMouseButtons(mouse));
+        }
+
+        private void Mouse_MouseScroll(IMouse mouse, ScrollWheel wheel)
+        {
+            // we can not determine which wheel was scrolled
+            // therefore we explicitely check the value of the first wheel
+            if (mouse.ScrollWheels.Count > 0)
+            {
+                float delta = mouse.ScrollWheels.First().Y;
+
+                if (delta != 0.0f)
+                {
+                    Game.OnMouseScroll(mouse.Position.Round(), delta, GetMouseButtons(mouse));
+                }
+            }
         }
 
         void Window_Load()

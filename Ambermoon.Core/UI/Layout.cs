@@ -1524,6 +1524,22 @@ namespace Ambermoon.UI
             return false;
         }
 
+        internal void ScrollUp(Position viewPosition)
+        {
+            if (IsInventory)
+            {
+                itemGrids[0].ScrollUp();
+            }
+        }
+
+        internal void ScrollDown(Position viewPosition)
+        {
+            if (IsInventory)
+            {
+                itemGrids[0].ScrollDown();
+            }
+        }
+
         public void Drag(Position position, ref CursorType cursorType)
         {
             foreach (var itemGrid in itemGrids)
