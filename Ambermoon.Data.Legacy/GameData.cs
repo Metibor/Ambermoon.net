@@ -125,6 +125,14 @@ namespace Ambermoon.Data.Legacy
                 if (loadPreference == LoadPreference.PreferExtracted && File.Exists(path))
                 {
                     Files.Add(name, fileReader.ReadFile(name, File.OpenRead(path)));
+                    //if (name.Contains("music", System.StringComparison.CurrentCultureIgnoreCase))
+                    //{
+                    //    foreach (var file in Files[name].Files)
+                    //    {
+                    //        File.WriteAllBytes($@"{path}_{file.Key}.sonic", file.Value.ReadToEnd());
+                    //        file.Value.Position = 0;
+                    //    }
+                    //}
                     HandleFileLoaded(name);
                 }
                 else if (loadPreference == LoadPreference.ForceExtracted)

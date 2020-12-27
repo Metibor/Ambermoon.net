@@ -85,7 +85,7 @@ namespace Ambermoon.Data
         public string Name => IsWorldMap ? $"{World}{Index:000}" : Texts[0]; // TODO: use correct language later?
         public MapFlags Flags { get; set; }
         public MapType Type { get; set; }
-        public uint MusicIndex { get; set; }
+        public AudioTrack MusicIndex { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         /// <summary>

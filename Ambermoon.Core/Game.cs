@@ -178,6 +178,7 @@ namespace Ambermoon
             return mapVariables[map.Index];
         }
         Savegame currentSavegame;
+        IAudioPlayer audioPlayer;
 
         // Rendering
         readonly Cursor cursor = null;
@@ -229,7 +230,7 @@ namespace Ambermoon
 
         public Game(IRenderView renderView, IMapManager mapManager, IItemManager itemManager,
             ISavegameManager savegameManager, ISavegameSerializer savegameSerializer,
-            IDataNameProvider dataNameProvider, TextDictionary textDictionary, Cursor cursor, bool legacyMode)
+            IDataNameProvider dataNameProvider, TextDictionary textDictionary, IAudioPlayer audioPlayer, Cursor cursor, bool legacyMode)
         {
             this.cursor = cursor;
             this.legacyMode = legacyMode;
@@ -242,6 +243,7 @@ namespace Ambermoon
             this.savegameSerializer = savegameSerializer;
             DataNameProvider = dataNameProvider;
             this.textDictionary = textDictionary;
+            this.audioPlayer = audioPlayer;
             camera3D = renderView.Camera3D;
             messageText = renderView.RenderTextFactory.Create();
             messageText.Layer = renderView.GetLayer(Layer.Text);
@@ -433,7 +435,7 @@ namespace Ambermoon
             player.Position.X = (int)playerX;
             player.Position.Y = (int)playerY;
             player.Direction = direction;
-            
+
             renderView.GetLayer(Layer.Map3D).Visible = false;
             renderView.GetLayer(Layer.Billboards3D).Visible = false;
             for (int i = (int)Global.First2DLayer; i <= (int)Global.Last2DLayer; ++i)
@@ -463,7 +465,7 @@ namespace Ambermoon
             player.Position.X = (int)playerX;
             player.Position.Y = (int)playerY;
             player.Direction = direction;
-            
+
             renderView.GetLayer(Layer.Map3D).Visible = true;
             renderView.GetLayer(Layer.Billboards3D).Visible = true;
             for (int i = (int)Global.First2DLayer; i <= (int)Global.Last2DLayer; ++i)
@@ -868,7 +870,7 @@ namespace Ambermoon
             }
         }
 
-        public void OnKeyDown(Key key, KeyModifiers modifiers)
+    public void OnKeyDown(Key key, KeyModifiers modifiers)
         {
             if (allInputDisabled)
                 return;
@@ -901,8 +903,8 @@ namespace Ambermoon
                             CloseWindow();
                     }
 
-                    break;
-                }
+                        break;
+                    }
                 case Key.F1:
                 case Key.F2:
                 case Key.F3:
@@ -921,20 +923,20 @@ namespace Ambermoon
                 case Key.Num7:
                 case Key.Num8:
                 case Key.Num9:
-                {
-                    if (layout.PopupDisableButtons)
+                    {
+                        if (layout.PopupDisableButtons)
+                            break;
+
+                        int index = key - Key.Num1;
+                        int column = index % 3;
+                        int row = 2 - index / 3;
+                        var newCursorType = layout.PressButton(column + row * 3, CurrentTicks);
+
+                        if (newCursorType != null)
+                            CursorType = newCursorType.Value;
+
                         break;
-
-                    int index = key - Key.Num1;
-                    int column = index % 3;
-                    int row = 2 - index / 3;
-                    var newCursorType = layout.PressButton(column + row * 3, CurrentTicks);
-
-                    if (newCursorType != null)
-                        CursorType = newCursorType.Value;
-
-                    break;
-                }
+                    }
                 default:
                     if (WindowActive)
                         layout.KeyDown(key, modifiers);
@@ -968,14 +970,14 @@ namespace Ambermoon
                 case Key.Num7:
                 case Key.Num8:
                 case Key.Num9:
-                {
-                    int index = key - Key.Num1;
-                    int column = index % 3;
-                    int row = 2 - index / 3;
-                    layout.ReleaseButton(column + row * 3);
+                    {
+                        int index = key - Key.Num1;
+                        int column = index % 3;
+                        int row = 2 - index / 3;
+                        layout.ReleaseButton(column + row * 3);
 
-                    break;
-                }
+                        break;
+                    }
             }
         }
 
@@ -1229,7 +1231,7 @@ namespace Ambermoon
                 {
                     if (position.X < lastMousePosition.X)
                         trappedMousePositionOffset.X += lastMousePosition.X - position.X;
-                }                    
+                }
                 else if (trappedPosition.X >= trapMouseArea.Right)
                 {
                     if (position.X > lastMousePosition.X)
@@ -1348,6 +1350,13 @@ namespace Ambermoon
                 layout.Reset();
                 layout.FillArea(new Rect(208, 49, 96, 80), GetPaletteColor(50, 28), false);
                 SetWindow(Window.MapView);
+                audioPlayer.Stop();
+                audioPlayer.PlayTrack((AudioTrack)Map.MusicIndex);
+                audioPlayer.Play();
+            }
+            else
+            {
+                audioPlayer.Stop();
             }
         }
 
@@ -2319,12 +2328,12 @@ namespace Ambermoon
                     break;
                 }
                 case Window.Chest:
-                {
-                    var chestEvent = (ChestMapEvent)currentWindow.WindowParameter;
-                    currentWindow = DefaultWindow;
-                    ShowChest(chestEvent);
-                    break;
-                }
+                    {
+                        var chestEvent = (ChestMapEvent)currentWindow.WindowParameter;
+                        currentWindow = DefaultWindow;
+                        ShowChest(chestEvent);
+                        break;
+                    }
                 case Window.Merchant:
                 {
                     // TODO

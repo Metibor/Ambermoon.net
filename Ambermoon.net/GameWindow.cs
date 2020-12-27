@@ -199,6 +199,19 @@ namespace Ambermoon
             var graphicProvider = new GraphicProvider(gameData, executableData);
             var textDictionary = TextDictionary.Load(new TextDictionaryReader(), gameData.Dictionaries.First()); // TODO: maybe allow choosing the language later?
 
+            IAudioPlayer audioPlayer;
+
+            switch (configuration.SoundSource)
+            {
+                case "MP3":
+                    audioPlayer = MP3AudioPlayer.Instance;
+                    audioPlayer.Path($@"{configuration.DataPath}\music");
+                    break;
+                default:
+                    audioPlayer = new NullAudioPlayer();
+                    break;
+            }
+
             // Create render view
             renderView = new RenderView(this, gameData, graphicProvider, new FontProvider(executableData),
                 new TextProcessor(), Width, Height);
@@ -211,7 +224,7 @@ namespace Ambermoon
             // Create game
             Game = new Game(renderView,
                 new MapManager(gameData, new MapReader(), new TilesetReader(), new LabdataReader()), executableData.ItemManager,
-                new SavegameManager(), new SavegameSerializer(), new DataNameProvider(executableData), textDictionary,
+                new SavegameManager(), new SavegameSerializer(), new DataNameProvider(executableData), textDictionary, audioPlayer,
                 new Render.Cursor(renderView, executableData.Cursors.Entries.Select(c => new Position(c.HotspotX, c.HotspotY)).ToList().AsReadOnly()),
                 configuration.LegacyMode);
             Game.QuitRequested += window.Close;

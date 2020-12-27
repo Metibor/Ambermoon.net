@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ambermoon.Data.Enumerations;
+using System;
 using System.Collections.Generic;
 
 namespace Ambermoon.Data.Legacy
@@ -35,7 +36,7 @@ namespace Ambermoon.Data.Legacy
             if (map.Type != MapType.Map2D && map.Type != MapType.Map3D)
                 throw new Exception("Invalid map data.");
 
-            map.MusicIndex = dataReader.ReadByte();
+            map.MusicIndex = (AudioTrack)dataReader.ReadByte();
             map.Width = dataReader.ReadByte();
             map.Height = dataReader.ReadByte();
             map.TilesetOrLabdataIndex = dataReader.ReadByte();
@@ -135,6 +136,8 @@ namespace Ambermoon.Data.Legacy
 
             if (numMapEvents > 0)
             {
+                // Console.WriteLine($"{map.Index}:{map.MusicIndex}:{map.Name}");
+
                 uint numTotalMapEvents = dataReader.ReadWord();
                 var mapEvents = new List<Tuple<MapEvent, int>>();
 
@@ -428,6 +431,7 @@ namespace Ambermoon.Data.Legacy
                         Volume = volume,
                         Unknown1 = unknown1
                     };
+                    Console.WriteLine(mapEvent);
                     break;
                 }
                 default:
