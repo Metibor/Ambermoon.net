@@ -1319,11 +1319,7 @@ namespace Ambermoon
                 layout.CancelDrag();
                 ResetCursor();
                 OpenStorage = null;
-                string mapName = Map.IsWorldMap
-                    ? DataNameProvider.GetWorldName(Map.World)
-                    : Map.Name;
-                windowTitle.Text = renderView.TextProcessor.CreateText(mapName);
-                windowTitle.TextColor = TextColor.Gray;
+                UpdateMapView();
             }
 
             windowTitle.Visible = show;
@@ -1349,6 +1345,15 @@ namespace Ambermoon
                 layout.FillArea(new Rect(208, 49, 96, 80), GetPaletteColor(50, 28), false);
                 SetWindow(Window.MapView);
             }
+        }
+
+        void UpdateMapView()
+        {
+            string mapName = Map.IsWorldMap
+                ? DataNameProvider.GetWorldName(Map.World)
+                : Map.Name;
+            windowTitle.Text = renderView.TextProcessor.CreateText(mapName);
+            windowTitle.TextColor = TextColor.Gray;
         }
 
         internal void OpenPartyMember(int slot, bool inventory)
@@ -1672,6 +1677,8 @@ namespace Ambermoon
 
                     PlayerMoved(mapChange);
                 }
+
+                UpdateMapView();
             });
         }
 
