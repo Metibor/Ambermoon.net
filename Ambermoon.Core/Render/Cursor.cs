@@ -11,6 +11,7 @@ namespace Ambermoon.Render
         readonly Dictionary<CursorType, Position> cursorHotspots = new Dictionary<CursorType, Position>();
         CursorType type = CursorType.Sword;
         internal Position Hotspot { get; private set; } = null;
+        IRenderText coordDisplay;
 
         public Cursor(IRenderView renderView, IReadOnlyList<Position> cursorHotspots)
         {
@@ -22,6 +23,12 @@ namespace Ambermoon.Render
 
             for (int i = 0; i < cursorHotspots.Count; ++i)
                 this.cursorHotspots.Add((CursorType)i, cursorHotspots[i]);
+
+            coordDisplay = renderView.RenderTextFactory.Create(renderView.GetLayer(Layer.Text),
+                renderView.TextProcessor.CreateText(""), TextColor.White, true);
+            coordDisplay.X = 0;
+            coordDisplay.Y = 194;
+            coordDisplay.Visible = true;
 
             UpdateCursor();
         }
@@ -65,6 +72,8 @@ namespace Ambermoon.Render
         public void UpdatePosition(Position screenPosition)
         {
             var viewPosition = renderView.ScreenToGame(screenPosition);
+
+            coordDisplay.Text = renderView.TextProcessor.CreateText($"X:{viewPosition.X:000} Y:{viewPosition.Y:000}");
 
             if (viewPosition != null)
             {
