@@ -433,7 +433,7 @@ namespace Ambermoon
             player.Position.X = (int)playerX;
             player.Position.Y = (int)playerY;
             player.Direction = direction;
-            
+
             renderView.GetLayer(Layer.Map3D).Visible = false;
             renderView.GetLayer(Layer.Billboards3D).Visible = false;
             for (int i = (int)Global.First2DLayer; i <= (int)Global.Last2DLayer; ++i)
@@ -463,7 +463,7 @@ namespace Ambermoon
             player.Position.X = (int)playerX;
             player.Position.Y = (int)playerY;
             player.Direction = direction;
-            
+
             renderView.GetLayer(Layer.Map3D).Visible = true;
             renderView.GetLayer(Layer.Billboards3D).Visible = true;
             for (int i = (int)Global.First2DLayer; i <= (int)Global.Last2DLayer; ++i)
@@ -866,9 +866,37 @@ namespace Ambermoon
                 else
                     player3D.MoveBackward(movement.MoveSpeed3D * Global.DistancePerTile, CurrentTicks);
             }
+            if (keys[(int)Key.Home] && !keys[(int)Key.End])
+            {
+                if (is3D)
+                {
+                    player3D.LevitateUp(-0.1f);
+                }
+            }
+            if (keys[(int)Key.End] && !keys[(int)Key.Home])
+            {
+                if (is3D)
+                {
+                    player3D.LevitateUp(+0.1f);
+                }
+            }
+            if (keys[(int)Key.PageUp] && !keys[(int)Key.PageDown])
+            {
+                if (is3D)
+                {
+                    player3D.TiltUp(1.0f);
+                }
+            }
+            if (keys[(int)Key.PageDown] && !keys[(int)Key.PageUp])
+            {
+                if (is3D)
+                {
+                    player3D.TiltDown(1.0f);
+                }
+            }
         }
 
-        public void OnKeyDown(Key key, KeyModifiers modifiers)
+    public void OnKeyDown(Key key, KeyModifiers modifiers)
         {
             if (allInputDisabled)
                 return;
@@ -901,8 +929,8 @@ namespace Ambermoon
                             CloseWindow();
                     }
 
-                    break;
-                }
+                        break;
+                    }
                 case Key.F1:
                 case Key.F2:
                 case Key.F3:
@@ -921,20 +949,20 @@ namespace Ambermoon
                 case Key.Num7:
                 case Key.Num8:
                 case Key.Num9:
-                {
-                    if (layout.PopupDisableButtons)
+                    {
+                        if (layout.PopupDisableButtons)
+                            break;
+
+                        int index = key - Key.Num1;
+                        int column = index % 3;
+                        int row = 2 - index / 3;
+                        var newCursorType = layout.PressButton(column + row * 3, CurrentTicks);
+
+                        if (newCursorType != null)
+                            CursorType = newCursorType.Value;
+
                         break;
-
-                    int index = key - Key.Num1;
-                    int column = index % 3;
-                    int row = 2 - index / 3;
-                    var newCursorType = layout.PressButton(column + row * 3, CurrentTicks);
-
-                    if (newCursorType != null)
-                        CursorType = newCursorType.Value;
-
-                    break;
-                }
+                    }
                 default:
                     if (WindowActive)
                         layout.KeyDown(key, modifiers);
@@ -968,14 +996,14 @@ namespace Ambermoon
                 case Key.Num7:
                 case Key.Num8:
                 case Key.Num9:
-                {
-                    int index = key - Key.Num1;
-                    int column = index % 3;
-                    int row = 2 - index / 3;
-                    layout.ReleaseButton(column + row * 3);
+                    {
+                        int index = key - Key.Num1;
+                        int column = index % 3;
+                        int row = 2 - index / 3;
+                        layout.ReleaseButton(column + row * 3);
 
-                    break;
-                }
+                        break;
+                    }
             }
         }
 
@@ -1229,7 +1257,7 @@ namespace Ambermoon
                 {
                     if (position.X < lastMousePosition.X)
                         trappedMousePositionOffset.X += lastMousePosition.X - position.X;
-                }                    
+                }
                 else if (trappedPosition.X >= trapMouseArea.Right)
                 {
                     if (position.X > lastMousePosition.X)
@@ -2319,12 +2347,12 @@ namespace Ambermoon
                     break;
                 }
                 case Window.Chest:
-                {
-                    var chestEvent = (ChestMapEvent)currentWindow.WindowParameter;
-                    currentWindow = DefaultWindow;
-                    ShowChest(chestEvent);
-                    break;
-                }
+                    {
+                        var chestEvent = (ChestMapEvent)currentWindow.WindowParameter;
+                        currentWindow = DefaultWindow;
+                        ShowChest(chestEvent);
+                        break;
+                    }
                 case Window.Merchant:
                 {
                     // TODO

@@ -112,6 +112,22 @@ namespace Ambermoon.Renderer
             });
         }
 
+        public static Matrix4 CreateXRotationMatrix(float angle)
+        {
+            const float deg2rad = (float)(Math.PI / 180.0);
+
+            var sin = (float)Math.Sin(angle * deg2rad);
+            var cos = (float)Math.Cos(angle * deg2rad);
+
+            return new Matrix4(new float[16]
+            {
+                1.0f, 0.0f, 0.0f, 0.0f,
+                0.0f, cos,  -sin, 0.0f,
+                0.0f, sin,  cos,  0.0f,
+                0.0f, 0.0f, 0.0f, 1.0f
+            });
+        }
+
         public static Matrix4 CreateYRotationMatrix(float angle)
         {
             const float deg2rad = (float)(Math.PI / 180.0);

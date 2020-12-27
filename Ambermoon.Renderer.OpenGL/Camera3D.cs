@@ -9,8 +9,10 @@ namespace Ambermoon.Renderer.OpenGL
         const double QuarterTurnAngle = 0.5 * Math.PI;
         readonly State state;
         readonly Matrix4 currentMatrix;
+        Matrix4 tiltMatrix = new Matrix4(Matrix4.Identity);
         Matrix4 rotationMatrix = new Matrix4(Matrix4.Identity);
         Matrix4 translateMatrix = new Matrix4(Matrix4.Identity);
+        float currentTilt = 0.0f;
         float currentAngle = 0.0f;
         double currentAngleCos = 0.0;
         double currentAngleSin = -1.0;
@@ -62,6 +64,7 @@ namespace Ambermoon.Renderer.OpenGL
         private void UpdateMatrix()
         {
             currentMatrix.Reset();
+            currentMatrix.Multiply(tiltMatrix);
             currentMatrix.Multiply(rotationMatrix);
             currentMatrix.Multiply(translateMatrix);
         }
@@ -72,6 +75,12 @@ namespace Ambermoon.Renderer.OpenGL
             Y += y;
             Z += z;
             translateMatrix = Matrix4.CreateTranslationMatrix(X, Y, Z);
+            UpdateMatrix();
+        }
+
+        private void Tilt(float angle)
+        {
+            tiltMatrix = Matrix4.CreateXRotationMatrix(angle);
             UpdateMatrix();
         }
 
@@ -123,6 +132,16 @@ namespace Ambermoon.Renderer.OpenGL
             UpdateMatrix();
         }
 
+        public void TiltUp(float angle)
+        {
+            TiltTowards(currentTilt - angle);
+        }
+
+        public void TiltDown(float angle)
+        {
+            TiltTowards(currentTilt + angle);
+        }
+
         public void TurnLeft(float angle)
         {
             TurnTowards(currentAngle - angle);
@@ -131,6 +150,17 @@ namespace Ambermoon.Renderer.OpenGL
         public void TurnRight(float angle)
         {
             TurnTowards(currentAngle + angle);
+        }
+
+        public void TiltTowards(float angle)
+        {
+            currentTilt = angle;
+            var radiant = AngleFactor * (currentTilt - 90.0f);
+            //currentAngleCos = Math.Cos(radiant);
+            //currentAngleSin = Math.Sin(radiant);
+            //currentPerpendicularAngleCos = Math.Cos(radiant - QuarterTurnAngle);
+            //currentPerpendicularAngleSin = Math.Sin(radiant - QuarterTurnAngle);
+            Tilt(currentTilt);
         }
 
         public void TurnTowards(float angle)

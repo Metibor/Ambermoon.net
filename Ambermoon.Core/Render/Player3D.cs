@@ -200,6 +200,16 @@ namespace Ambermoon.Render
             Camera.TurnRight(angle);
         }
 
+        public void TiltUp(float angle) // in degrees
+        {
+            Camera.TiltUp(angle);
+        }
+
+        public void TiltDown(float angle) // in degrees
+        {
+            Camera.TiltDown(angle);
+        }
+
         public void TurnTowards(float angle) // turn to attacking monster or stand on a spinner (in degrees)
         {
             this.angle = angle;
